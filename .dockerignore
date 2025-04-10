@@ -1,0 +1,40 @@
+# Ignore build output
+bin/
+obj/
+out/
+publish/
+
+# Ignore user/local config
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+
+# Ignore Git
+.git/
+.gitignore
+
+# Ignore logs
+*.log
+
+# Node modules if using frontend with Node
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env and secrets
+.env
+*.env
+secrets.json
+
+# Other temporary or cache
+*.tmp
+*.bak
+
+# Python cache and virtual environments
+__pycache__/
+venv/
+.venv/

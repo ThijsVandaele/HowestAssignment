@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOTPASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - api_db
+
+  app:
+    build:
+      context: ./todo-api
+    restart: always
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+    ports:
+      - "8002:8000"
+    networks:
+      - api_db
+
+volumes:
+  mariadb_data:
+
+networks:
+  api_db:

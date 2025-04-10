@@ -1,0 +1,53 @@
+# Build artifacts
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+.vscode/*
+
+# Rider
+.idea/
+*.sln.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+*.env
+
+# Package managers
+node_modules/
+packages/
+
+# NuGet
+*.nupkg
+.nuget/
+
+# dotnet user secrets
+secrets.json
+
+# Temporary files
+*.tmp
+*.bak
+
+# Publish output
+publish/
+wwwroot/dist/
+
+# Python cache and virtual environments
+__pycache__/
+venv/
+.venv/
