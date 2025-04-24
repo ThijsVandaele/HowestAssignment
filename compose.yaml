@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  mariadb:
+  todo-mariadb:
     image: mariadb:latest
     restart: always
     environment:
@@ -15,19 +13,34 @@ services:
       - mariadb_data:/var/lib/mysql
     networks:
       - api_db
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 30s
+
 
   app:
     build:
       context: ./todo-api
     restart: always
     depends_on:
-      - mariadb
+      todo-mariadb:
+        condition: service_healthy
+
     env_file:
       - .env
     ports:
       - "8002:8000"
     networks:
       - api_db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readiness"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 30s
 
 volumes:
   mariadb_data:
