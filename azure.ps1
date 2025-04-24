@@ -17,12 +17,11 @@ $registryServerName = "$registryUserName.azurecr.io"
 
 $appApiName = $envVars["APP_API_NAME"]
 $appDbName = $envVars["APP_DB_NAME"]
-$appDbPort = $envVars["APP_DB_PORT"]
 
 $dbUser = $envVars["DB_USER"]
 $dbPassword = $envVars["DB_PASSWORD"]
 $dbName = $envVars["DB_NAME"]
-$dbServerRootPassword = $envVars["DB_ROOTPASSWORD"]
+$appDbPort = $envVars["APP_DB_PORT"]
 
 # LOGIN 
 az login
@@ -42,10 +41,10 @@ $registryUsername = $acrCredentials.username
 $registryPassword = $acrCredentials.passwords[0].value
 
 # Build/push/tag to registry
-$mariaDbBaseImageTag='mariadb:latest'
-docker pull $mariaDbBaseImageTag
+$DbBaseImageTag='postgres:17.0-alpine'
+docker pull $DbBaseImageTag
 $tagNameDb = "$registryServerName/$appDbName"
-docker tag $mariaDbBaseImageTag $tagNameDb
+docker tag $DbBaseImageTag $tagNameDb
 docker push $tagNameDb
 
 $tagName = "$registryServerName/$appApiName"
@@ -58,17 +57,20 @@ az containerapp env create `
     --resource-group $resourceGroup `
     --location $location
 
-# Create Azure Container App MariaDb
-az containerapp create `
+
+# Create Azure Container App DB
+    az containerapp create `
     --name $appDbName `
     --resource-group $resourceGroup `
     --environment $environmentName `
-    --image docker.io/mariadb `
-    --env-vars MYSQL_ROOT_PASSWORD=$dbServerRootPassword `
-                MYSQL_DATABASE=$dbName `
-                MYSQL_USER=$dbUser `
-                MYSQL_PASSWORD=$dbPassword `
-    --target-port appDbPort `
+    --image $tagNameDb `
+    --registry-server $registryServerName `
+    --registry-password $registryPassword `
+    --registry-username $registryName `
+    --env-vars  POSTGRES_USER=$dbUser `
+                POSTGRES_PASSWORD=$dbPassword `
+                POSTGRES_DB=$dbName `
+    --target-port $appDbPort `
     --ingress internal `
     --transport tcp
 
@@ -86,13 +88,13 @@ az containerapp create `
     --env-vars DB_USER=$dbUser `
                 DB_PASSWORD=$dbPassword `
                 DB_NAME=$dbName `
-                DB_HOST=$appDbName  `
-                DB_PORT=$appDbPort
+                APP_DB_NAME=$appDbName  `
+                APP_DB_PORT=$appDbPort
 
-az containerapp update `
-  --name $appApiName `
-  --resource-group $resourceGroup `
-  --set template.containers[0].livenessProbe.type="Http" `
-  --set template.containers[0].livenessProbe.httpGet.path="/healthz" `
-  --set template.containers[0].readinessProbe.type="Http" `
-  --set template.containers[0].readinessProbe.httpGet.path="/readiness"
+# az containerapp update `
+#   --name $appApiName `
+#   --resource-group $resourceGroup `
+#   --set template.containers[0].livenessProbe.type="Http" `
+#   --set template.containers[0].livenessProbe.httpGet.path="/healthz" `
+#   --set template.containers[0].readinessProbe.type="Http" `
+#   --set template.containers[0].readinessProbe.httpGet.path="/readiness"

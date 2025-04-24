@@ -4,10 +4,12 @@ FROM python:3.10-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies (required for MariaDB client and others)
+# Install system dependencies (required for psycopg2 and others)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    libmariadb-dev \
+    libpq-dev \
+    libc6-dev \
+    build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,6 +28,7 @@ COPY ./src /app/
 
 # Expose port 8000 for the FastAPI app
 EXPOSE 8000
+EXPOSE 80
 
 # Start the app only after MariaDB is ready, using the dynamic DB_HOST environment variable
-CMD ["/wait-for-it.sh", "todo-mariadb:3306", "--timeout=60", "--strict", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/wait-for-it.sh", "todo-postgres:5432", "--timeout=60", "--strict", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

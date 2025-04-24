@@ -36,8 +36,8 @@ if missing_vars:
     raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 # Assemble the SQLAlchemy database URL
-SQLALCHEMY_DATABASE_URL = f"mariadb+mariadbconnector://{DB_USER}:{DB_PASSWORD}@{APP_DB_NAME}:{APP_DB_PORT}/{DB_NAME}"
-logger.info(f"CON_STRING: mariadb://{DB_USER}:***@{APP_DB_NAME}:{APP_DB_PORT}/{DB_NAME}")
+SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{APP_DB_NAME}:{APP_DB_PORT}/{DB_NAME}"
+logger.info(f"CON_STRING: postgresql+psycopg2://{DB_USER}:***@{APP_DB_NAME}:{APP_DB_PORT}/{DB_NAME}")
 
 # Create the engine for the database connection
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
