@@ -40,5 +40,5 @@ jobs:
       - name: pull, tag, and push postgres
         run: |
           docker pull postgres:17.0-alpine
-          docker tag postgres:17.0-alpine ${{ secrets.ACR_ENDPOINT }}/${{APP_DB_NAME}}:${{ steps.tag.outputs.tag }}
-          docker push ${{ secrets.ACR_ENDPOINT }}/${{APP_DB_NAME}}:${{ steps.tag.outputs.tag }}
+          docker tag postgres:17.0-alpine ${{ secrets.ACR_ENDPOINT }}/${{ env.APP_DB_NAME }}:${{ steps.tag.outputs.tag }}
+          docker push ${{ secrets.ACR_ENDPOINT }}/${{ env.APP_DB_NAME }}:${{ steps.tag.outputs.tag }}
