@@ -33,7 +33,7 @@ jobs:
           push: true
           build-args: |
             version=${{ steps.tag.outputs.tag }}
-          context: .
+          context: ./todo-api
           file: ./todo-api/Dockerfile
           tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.APP_API_NAME }}:${{ steps.tag.outputs.tag }}
 
