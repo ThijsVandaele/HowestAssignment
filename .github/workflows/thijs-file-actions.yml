@@ -5,7 +5,8 @@ on:
     tags: ["v*.*.*"]
 
 env:
-  IMAGE_NAME: todo-api
+  APP_API_NAME: todo-api
+  APP_DB_NAME: todo-postgres
 
 jobs:
   build:
@@ -31,7 +32,13 @@ jobs:
         with:
           push: true
           build-args: |
-           version=${{ steps.tag.outputs.tag }}
-          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+            version=${{ steps.tag.outputs.tag }}
+          context: .
+          file: ./todo-api/Dockerfile
+          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.APP_API_NAME }}:${{ steps.tag.outputs.tag }}
 
-
+      - name: pull, tag, and push postgres
+        run: |
+          docker pull postgres:17.0-alpine
+          docker tag postgres:17.0-alpine ${{ secrets.ACR_ENDPOINT }}/${{APP_DB_NAME}}:${{ steps.tag.outputs.tag }}
+          docker push ${{ secrets.ACR_ENDPOINT }}/${{APP_DB_NAME}}:${{ steps.tag.outputs.tag }}
